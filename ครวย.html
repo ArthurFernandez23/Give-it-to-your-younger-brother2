@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>ระบบตรวจสอบสิทธิ์เข้าใช้งาน</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Prompt&display=swap');
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: rgba(0,0,0,0.75);
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
+      padding: 40px 30px;
+      max-width: 450px;
+      width: 90%;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    p {
+      margin-bottom: 25px;
+      font-size: 18px;
+    }
+    input[type="text"] {
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      width: 100%;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #5a67d8;
+      border: none;
+      color: white;
+      padding: 14px 30px;
+      font-size: 17px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      font-weight: 600;
+    }
+    button:hover {
+      background-color: #434190;
+    }
+    .hidden {
+      display: none;
+    }
+    .final-message {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ff5555;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="step1">
+  <h2>ยินดีต้อนรับสู่ระบบรักษาความปลอดภัยขั้นสูง</h2>
+  <p>กรุณายืนยันตัวตนเบื้องต้นก่อนเข้าใช้งานระบบ</p>
+  <input type="text" id="name" placeholder="กรอกชื่อ-นามสกุล" autocomplete="off" />
+  <button onclick="nextStep()">ดำเนินการต่อ</button>
+</div>
+
+<div class="container hidden" id="step2">
+  <h2>กรุณาตอบคำถามเพื่อยืนยันว่าคุณไม่ใช่หุ่นยนต์ 🤖</h2>
+  <p id="question-text">...</p>
+  <input type="text" id="answer" placeholder="กรอกคำตอบ" autocomplete="off" />
+  <button onclick="checkAnswer()">ตรวจสอบ</button>
+</div>
+
+<div class="container hidden" id="step3">
+  <h2>กำลังตรวจสอบข้อมูล...</h2>
+  <p>ระบบกำลังเปรียบเทียบข้อมูลกับฐานข้อมูลโลก 🌐</p>
+</div>
+
+<div class="container hidden" id="final">
+  <h2>😅 เอาจริงดิ...</h2>
+  <p>แค่นี้ก็โดนหลอกแล้วเหรอ?</p>
+  <p class="final-message">ควยเหี้ยมีความพยามในการเสือกจัดอะ 👍</p>
+</div>
+
+<script>
+  const questions = [
+    {q: "ถ้าโต๊ะมี 4 ขา เก้าอี้มี 4 ขา แล้วนกมีขากี่ขา?", a: ["2", "สอง"]},
+    {q: "ถ้าลูกบอลสีแดง 3 ลูก และลูกบอลสีฟ้า 2 ลูก มีลูกบอลทั้งหมดกี่ลูก?", a: ["5", "ห้า"]},
+    {q: "ถ้า 5+3 เท่ากับ?", a: ["8", "แปด"]},
+    {q: "ถ้ารถมีล้อ 4 ล้อ แล้วรถจักรยานมีล้อกี่ล้อ?", a: ["2", "สอง"]},
+    {q: "ถ้าปากกามี 1 แท่ง แล้วปากกาสองแท่งมีกี่แท่ง?", a: ["2", "สอง"]}
+  ];
+
+  let currentStep = 0;
+
+  function nextStep() {
+    const name = document.getElementById('name').value.trim();
+    if(name === "") {
+      alert("กรุณากรอกชื่อก่อนนะครับ");
+      return;
+    }
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    showQuestion();
+  }
+
+  function showQuestion() {
+    if(currentStep < questions.length) {
+      document.getElementById('question-text').textContent = questions[currentStep].q;
+      document.getElementById('answer').value = "";
+      document.getElementById('answer').focus();
+    } else {
+      showFinal();
+    }
+  }
+
+  function checkAnswer() {
+    const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+    const correctAnswers = questions[currentStep].a;
+    if(correctAnswers.includes(userAnswer)) {
+      currentStep++;
+      if(currentStep < questions.length) {
+        showQuestion();
+      } else {
+        showFinal();
+      }
+    } else {
+      alert("คำตอบไม่ถูกต้อง ลองใหม่อีกครั้ง!");
+      document.getElementById('answer').value = "";
+      document.getElementById('answer').focus();
+    }
+  }
+
+  function showFinal() {
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step3').classList.remove('hidden');
+    setTimeout(() => {
+      document.getElementById('step3').classList.add('hidden');
+      document.getElementById('final').classList.remove('hidden');
+    }, 2500);
+  }
+</script>
+
+</body>
+</html>
